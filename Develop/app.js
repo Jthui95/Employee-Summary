@@ -1,76 +1,155 @@
-const Manager = require("./lib/Manager");
-const Engineer = require("./lib/Engineer");
-const Intern = require("./lib/Intern");
-const inquirer = require("inquirer");
-const path = require("path");
-const fs = require("fs");
+// const Manager = require("./lib/Manager");
+// const Engineer = require("./lib/Engineer");
+// const Intern = require("./lib/Intern");
+// const inquirer = require("inquirer");
+// const path = require("path");
+// const fs = require("fs");
+  
+const fs = require("fs")
+const inquirer = require("inquirer")
+let renderFile = require("./lib/htmlRenderer")
+const generateManager = renderFile.createManager
+const generateEngineer = renderFile.createEngineer
+const generateIntern = renderFile.createIntern
+const renderHTML = renderFile.renderMain
 
-const OUTPUT_DIR = path.resolve(__dirname, "output");
-const outputPath = path.join(OUTPUT_DIR, "team.html");
+// const OUTPUT_DIR = path.resolve(__dirname, "output");
+// const outputPath = path.join(OUTPUT_DIR, "team.html");
 
-const render = require("./lib/htmlRenderer");
+// const render = require("./lib/htmlRenderer");
 
-const questions = [
-    {
-        type: "input",
-        message: "How many employees do you have?",
-        name:"employees",
-        choices: ["Engineer" , "Intern", "Manager"],
-    },
-    {
-        type: "list",
-        message: "Please select what you are.",
-        name:"occupation",
-        choices: ["Engineer" , "Intern", "Manager"],
-    },
-    {
-        type: "input",
-        message: "What is your name",
-        name:"name",
-         default: "Jonathan",
-         validate: function(answer){
-            if (answer.length < 1) {
-             return console.log("A name is required for this section.")
-         } else{
-            return true;
-            }
-        }
-    },
-    {
-        type: "input",
-        message: "What is your id",
-        name:"id",
-        default: "4565088",
-        validate: function(answer){
-            if (answer.length < 1) {
-                return console.log("A valid ID is required for this section.")
-            } else{
-            return true;
-            }
-            }
-    
-    },
-    {
-        type: "input",
-        message: "What is your email address?",
-        name:"email",
-        default: "email@email.com",
-        validate: function(answer){
-            if (answer.length < 1) {
-                return console.log("A valid email is required for this section.")
-            } else{
-            return true;
-            }
-            }
-    
-    },
-
-]
 function init() {
-    inquirer.prompt(questions).then(function(response){
-        console.log(response.employee)
-    })
-}
+    inquirer.prompt([{
+        
+          type: "input",
+          message: "Please input your name.",
+          name: "name",
+          validate: function(answer){
+             if (answer.length < 1) {
+              return console.log("A name is required for this section.")
+          } else{
+             return true;
+             }
+         }
+        },
+        {
+            type: "number",
+            message: "Please input your ID.",
+            name: "id",
+            validate: function(answer){
+                if (answer.length < 1) {
+                 return console.log("A ID is required for this section.")
+             } else{
+                return true;
+                }
+            }
+        },
+        {
+            type: "email",
+            message: "Please input your email.",
+            name: "email",
+            validate: function(answer){
+                if (answer.length < 1) {
+                 return console.log("A email is required for this section.")
+             } else{
+                return true;
+                }
+            }
+        },
+        {
+            type: "list",
+        message: "How many employees do you have?",
+        name:"role",
+        choices: ["Engineer" , "Intern", "Manager"],
+            validate: function(answer){
+                if (answer.length < 1) {
+                 return console.log("A name is required for this section.")
+             } else{
+                return true;
+                }
+            }
+        },
+])
+.then(
+function({name, id, email, role}) {
+    switch(role){
+        case "Engineer":
+            inquirer
+            .prompt({
+                type:"input",
+                message: "What is your Github username?",
+                name: "github",
+                validate: function(answer){
+                    if (answer.length < 1) {
+                     return console.log("A name is required for this section.")
+                 } else{
+                    return true;
+                    }
+                }
+            }).then(
+                function({github}) {
+                    generateEngineer(name, id, email, github)
+                    addOtherMembers()
+                }
+            )
+        break
+        case "Intern":
+            inquirer
+            .prompt({
+                type:"input",
+                message: "what school do you attend?",
+                name:"school"
+            }).then (function({school}){
+                generateIntern(name,id,email,school)
+                addOtherMembers()
+            }
+            )
+            break
+        case "Manager":
+            inquirer
+            .prompt({
+                type: "input",
+                message: "What is your Office Number?",
+                name: "officeNumber",
+                validate: function(answer){
+                    if (answer.length < 1) {
+                     return console.log("A name is required for this section.")
+                 } else{
+                    return true;
+                    }
+                }
+            }).then(
+                function({officeNumber}) {
+                    generateManager(name, id, email, officeNumber)
+                    addOtherMembers();
+                }
+            )
+            break
+        }
+        })
+    }
+
+    function addOtherMembers(){
+        inquirer.prompt({
+            type:"confirm",
+            message: "Are there other team members?",
+            name:"addOtherMembers"
+        }).then(
+            function({addOtherMembers}) {
+                console.log("add other members", addOtherMembers)
+                if(addOtherMembers) {
+                    init()
+                } else {
+                    renderHTML()
+                }
+            }
+        )
+        .catch(err => {
+            console.log("Error adding other members", err)
+            throw err
+        })
+    }
+
 init();
 // Write code to use inquirer to gather information about the development team members,
 // and to create objects for each team member (using the correct classes as blueprints!)
