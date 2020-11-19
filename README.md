@@ -8,7 +8,7 @@ Click [HERE](https://drive.google.com/file/d/1DWztCtOeP8GnpJKoXQMG-Vn3phkIk0bo/v
  This was our 10th homework assignment for our UCI full stack webdevelopment program at UCI. The goal was to build an application that allows the manager of a team to create a roster of his or her employees via CLI. This will allow to add as many employees as you need to the file. You can also dynamically change roles or update them. 
 
  ## Demo Photo
- ![Project](https://github.com/Jthui95/Employee-Summary/blob/master/Develop/Assets/demo.png"Demo")
+![ScreenShot](/Assets/demo.png)
 
 ## Table of Contents
 [Installation](#Installation) 
